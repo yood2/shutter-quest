@@ -44,17 +44,7 @@ class DBHelper:
         if not p1_response.data:
             return []
 
-        user_quest_ids = [row['questid'] for row in p1_response.data]
-
-        p2_response = self.client.table("participants") \
-            .select("questid") \
-            .in_("questid", user_quest_ids) \
-            .is_("score", "null") \
-            .execute()
-            
-        active_quest_ids = {row['questid'] for row in p2_response.data}
-
-        return [row for row in p1_response.data if row['questid'] in active_quest_ids]
+        return [row for row in p1_response.data if row['score'] is None]
     
     def get_quests_completed(self, user_id: str) -> List[Dict[str, Any]]:
         p1_response = self.client.table("participants") \
@@ -65,14 +55,4 @@ class DBHelper:
         if not p1_response.data:
             return []
 
-        user_quest_ids = [row['questid'] for row in p1_response.data]
-        
-        incomplete_response = self.client.table("participants") \
-            .select("questid") \
-            .in_("questid", user_quest_ids) \
-            .is_("score", "null") \
-            .execute()
-
-        incomplete_quest_ids = {row['questid'] for row in incomplete_response.data}
-
-        return [row for row in p1_response.data if row['questid'] not in incomplete_quest_ids]
+        return [row for row in p1_response.data if row['score'] is not None]

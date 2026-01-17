@@ -90,18 +90,22 @@ def get_pending_quests():
             'message': 'userID is required'
         }), 400
 
-    result = db_helper.get_quest_pending(user_id)
+    participant_rows = db_helper.get_quests_pending(user_id)
     
-    if not result:
+    if not participant_rows:
         return jsonify({'quests': []}), 200
     
+    quest_ids = [row['questid'] for row in participant_rows]
+    
     formatted_quests = []
-    for row in result:
-        formatted_quests.append({
-            'quest_id': row.get('questid'),
-            'prompt': row.get('prompt'),
-            'host_id': row.get('hostid')
-        })
+    for quest_id in quest_ids:
+        quest = db_helper.get_quest(quest_id)
+        if quest:
+            formatted_quests.append({
+                'quest_id': quest.get('questid'),
+                'prompt': quest.get('prompt'),
+                'host_id': quest.get('hostid')
+            })
     
     return jsonify({'quests': formatted_quests}), 200
 
@@ -114,18 +118,22 @@ def get_completed_quests():
             'message': 'userID is required'
         }), 400
 
-    result = db_helper.get_quest_completed(user_id)
+    participant_rows = db_helper.get_quests_completed(user_id)
     
-    if not result:
+    if not participant_rows:
         return jsonify({'quests': []}), 200
     
+    quest_ids = [row['questid'] for row in participant_rows]
+    
     formatted_quests = []
-    for row in result:
-        formatted_quests.append({
-            'quest_id': row.get('questid'),
-            'prompt': row.get('prompt'),
-            'host_id': row.get('hostid')
-        })
+    for quest_id in quest_ids:
+        quest = db_helper.get_quest(quest_id)
+        if quest:
+            formatted_quests.append({
+                'quest_id': quest.get('questid'),
+                'prompt': quest.get('prompt'),
+                'host_id': quest.get('hostid')
+            })
     
     return jsonify({'quests': formatted_quests}), 200
 
