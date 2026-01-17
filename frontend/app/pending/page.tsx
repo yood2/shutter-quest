@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { getPendingQuests } from "@/lib/api"
+import { getPendingQuests } from "@/utils/api"
 import { useRouter } from "next/navigation"
 
 const pendingQuests = getPendingQuests("testUserId")
