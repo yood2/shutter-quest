@@ -2,10 +2,20 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import random
 import os
+import base64
 from dotenv import load_dotenv
 from src.DBHelper import DBHelper
 
 load_dotenv()
+
+def serialize_image_to_bytea(image_data):
+    if image_data.startswith('data:image'):
+        image_data = image_data.split(',')[1]
+    
+    binary_data = base64.b64decode(image_data)
+    postgres_hex = "\\x" + binary_data.hex()
+    
+    return postgres_hex
 
 app = Flask(__name__)
 CORS(app)
@@ -128,11 +138,38 @@ def create_quest():
     image = data.get('image')
     time = data.get('time')
     
-    # TODO: Call DBHelper to insert quest
+    import time as time_module
+    
+    quest_data = {
+        'prompt': prompt,
+        'datecreated': int(time_module.time()),
+        'hostid': host_id
+    }
+    
+    quest_result = db_helper.insert_quest(quest_data)
+    quest_id = quest_result.get('questid')
+    
+    participants_data = []
+
+    # TODO: Use CLIP for score (confidence score)
+
+    serialized_image = serialize_image_to_bytea(image)
+    
+    for user_id in user_ids:
+        participant = {
+            'questid': quest_id,
+            'userid': user_id,
+            'score': None, # TODO
+            'timetaken': time if user_id == host_id else None,
+            'photo': serialized_image if user_id == host_id else None
+        }
+        participants_data.append(participant)
+    
+    db_helper.insert_participants(participants_data)
     
     return jsonify({
         'message': 'Quest created successfully',
-        'quest_id': None
+        'quest_id': quest_id
     }), 201
 
 @app.route('/api/get-prompt', methods=['GET'])
