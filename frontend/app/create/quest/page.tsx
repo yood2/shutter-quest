@@ -3,18 +3,21 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { CameraButton } from "@/app/pending/[questId]/components/camera-button"
-import { getPrompt } from "@/utils/api"
+import { getPrompt, createQuest } from "@/utils/api"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useState, useEffect } from "react"
+import { useAuth } from "@/contexts/AuthContext"
 
 export default function CreateQuestPage() {
     const router = useRouter()
     const searchParams = useSearchParams()
+    const auth = useAuth()
     const [prompt, setPrompt] = useState<string>("")
     const [loading, setLoading] = useState(true)
     const [capturedImage, setCapturedImage] = useState<string | null>(null)
     const [invitedUsers, setInvitedUsers] = useState<string[]>([])
     const [elapsedTime, setElapsedTime] = useState(0)
+    const [submitting, setSubmitting] = useState(false)
 
     // Timer effect - starts when component mounts
     useEffect(() => {
@@ -56,11 +59,29 @@ export default function CreateQuestPage() {
         setCapturedImage(imageData)
     }
 
-    const handleCreateQuest = () => {
-        if (!capturedImage) return
-        console.log("Creating quest with image:", capturedImage.substring(0, 50) + "...")
-        console.log("Inviting users:", invitedUsers)
-        // TODO: Implement quest creation logic
+    const handleCreateQuest = async () => {
+        if (!capturedImage || !auth.userId || !prompt) return
+        
+        setSubmitting(true)
+        try {
+            const response = await createQuest(
+                prompt,
+                auth.userId,
+                invitedUsers,
+                capturedImage,
+                elapsedTime
+            )
+            
+            console.log("Quest created successfully:", response)
+            
+            // Redirect to home or pending quests page
+            router.push("/")
+        } catch (error) {
+            console.error("Failed to create quest:", error)
+            alert("Failed to create quest. Please try again.")
+        } finally {
+            setSubmitting(false)
+        }
     }
 
     return (
@@ -97,8 +118,6 @@ export default function CreateQuestPage() {
                             </>
                         )}
 
-                        
-
                         {invitedUsers.length > 0 && (
                             <div className="space-y-2">
                                 <p className="text-sm font-medium">Invited Users:</p>
@@ -134,10 +153,10 @@ export default function CreateQuestPage() {
                                 <CameraButton onImageCapture={handleImageCapture} />
                                 <Button 
                                     onClick={handleCreateQuest}
-                                    disabled={!capturedImage || loading}
+                                    disabled={!capturedImage || loading || submitting || !auth.userId}
                                     className="flex-1"
                                 >
-                                    Submit Quest
+                                    {submitting ? "Creating..." : "Submit Quest"}
                                 </Button>
                             </div>
                         </div>
