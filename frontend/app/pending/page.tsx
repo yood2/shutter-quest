@@ -64,7 +64,7 @@ export default function PendingPage() {
     <main className="min-h-screen bg-background px-4 py-6">
       <div className="mx-auto max-w-md">
         <Button
-          variant="ghost"
+          variant="outline2"
           className="mb-4"
           onClick={() => router.push("/")}
         >

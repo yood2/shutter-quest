@@ -80,7 +80,7 @@ export default function CreatePage() {
         <main className="min-h-screen bg-background flex items-center justify-center px-4 py-6">
             <div className="mx-auto max-w-md w-full">
                 <Button 
-                    variant="ghost" 
+                    variant="outline2" 
                     className="mb-4"
                     onClick={() => router.push("/")}
                 >
