@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation"
 import { useAuth } from "@/contexts/AuthContext"
 import { useEffect, useRef } from "react"
 import { getPoints } from "@/utils/api"
+import Image from "next/image"
 
 /**
  * Main RPG Menu Page
@@ -52,7 +53,16 @@ export default function Page() {
       <div className="mx-auto max-w-md w-full">
         <Card className="w-full">
           <CardHeader className="flex flex-row items-center justify-between border-b-4 border-black/10">
-            <CardTitle className="text-4xl">Shutter Quest</CardTitle>
+            <div className="flex items-center gap-1">
+              <Image 
+                src="/newlogo.png" 
+                alt="Shutter Quest Logo" 
+                width={96} 
+                height={96}
+                className="object-contain"
+              />
+              <CardTitle className="text-4xl">Shutter Quest</CardTitle>
+            </div>
             <Button 
               onClick={logout}
               variant="outline"
