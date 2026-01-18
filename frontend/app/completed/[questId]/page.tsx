@@ -9,6 +9,8 @@ import { Participant } from "@/types/types"
 import { getCompletedQuests } from "@/utils/api"
 import { useRouter } from "next/navigation"
 import { use, useState } from "react"
+import { useEffect } from "react"
+import { Quest } from "@/types/types"
 
 const participants: Participant[] = [
   { questId: 1, userId: 'Alice', score: 100, time: 120, photo: null },
@@ -20,8 +22,18 @@ export default function QuestDetailsPage({ params }: { params: Promise<{ questId
   const router = useRouter()
   const { questId } = use(params)
   const [selectedParticipant, setSelectedParticipant] = useState<Participant | null>(null)
-  
-  const quest = getCompletedQuests("testUserId").find(q => q.questId === Number(questId))
+  const [quest, setQuest] = useState<Quest | null>(null);
+
+  useEffect(() => {
+    const fetchQuest = async () => {
+      const quests = await getCompletedQuests(questId);
+      if (Array.isArray(quests)) {
+        const found = quests.find(q => q.questId === Number(questId));
+        setQuest(found || null);
+      }
+    };
+    fetchQuest();
+  }, [questId]);
 
   // Determine the winner: highest score, with time as tie-breaker (lower time wins)
   const winner = participants.reduce((prev, current) => {
@@ -38,7 +50,7 @@ export default function QuestDetailsPage({ params }: { params: Promise<{ questId
           <Button onClick={() => router.push("/completed")}>
             Back to Completed Quests
           </Button>
-        </div> 
+        </div>
       </main>
     )
   }
@@ -46,8 +58,8 @@ export default function QuestDetailsPage({ params }: { params: Promise<{ questId
   return (
     <main className="min-h-screen bg-background px-4 py-6">
       <div className="mx-auto max-w-md">
-        <Button 
-          variant="ghost" 
+        <Button
+          variant="ghost"
           className="mb-4"
           onClick={() => router.push("/completed")}
         >
@@ -72,7 +84,7 @@ export default function QuestDetailsPage({ params }: { params: Promise<{ questId
                   {participants.map((participant, index) => {
                     const isWinner = participant.userId === winner.userId
                     return (
-                      <TableRow 
+                      <TableRow
                         key={index}
                         className={`cursor-pointer ${isWinner ? 'bg-green-100 hover:bg-green-200 dark:bg-green-950 dark:hover:bg-green-900' : ''}`}
                         onClick={() => setSelectedParticipant(participant)}
@@ -103,8 +115,8 @@ export default function QuestDetailsPage({ params }: { params: Promise<{ questId
             </AlertDialogHeader>
             <div className="flex flex-col items-center space-y-4">
               {selectedParticipant?.photo ? (
-                <img 
-                  src={selectedParticipant.photo} 
+                <img
+                  src={selectedParticipant.photo}
                   alt={`${selectedParticipant.userId}'s submission`}
                   className="max-w-full h-auto rounded-lg"
                 />

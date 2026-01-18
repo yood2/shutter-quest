@@ -4,21 +4,37 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { getCompletedQuests } from "@/utils/api"
 import { useRouter } from "next/navigation"
+import { useAuth } from "@/contexts/AuthContext"
+import { useEffect } from "react"
+import { Quest } from "@/types/types"
+import { useState } from "react"
 
-const completedQuests = getCompletedQuests("testUserId")
 
 export default function CompletedPage() {
   const router = useRouter()
-
+  const [completedQuests, setCompletedQuests] = useState<Quest[]>([]);
+  const auth = useAuth();
   const handleQuestClick = (questId: number) => {
     router.push(`/completed/${questId}`)
   }
 
+  const fetchData = async () => {
+    if (auth.isAuthenticated && auth.userId) {
+      const quests = await getCompletedQuests(auth.userId);
+      console.log("Completed page: ");
+      console.log(quests)
+      setCompletedQuests(quests);
+    }
+  };  
+
+  useEffect(() => {
+    fetchData()
+  }, []);
   return (
     <main className="min-h-screen bg-background px-4 py-6">
       <div className="mx-auto max-w-md">
-        <Button 
-          variant="ghost" 
+        <Button
+          variant="ghost"
           className="mb-4"
           onClick={() => router.push("/")}
         >
