@@ -219,7 +219,9 @@ def create_quest():
     
     return jsonify({
         'message': 'Quest created successfully',
-        'questId': quest_id
+        'questId': quest_id,
+        'score': score,
+        'timetaken': time
     }), 201
 
 @app.route('/api/get-prompt', methods=['GET'])
