@@ -56,3 +56,19 @@ class DBHelper:
             return []
 
         return [row for row in p1_response.data if row['score'] is not None]
+
+    def get_points(self, user_id: str) -> Optional[int]:
+        response = self.client.table("users").select("points").eq("userid", user_id).execute()
+        if response.data and response.data[0] and 'points' in response.data[0]:
+            return response.data[0]['points']
+        return None
+
+    def increment_points(self, user_id: str, points_to_add: int) -> Optional[Dict[str, Any]]:
+        current_points = self.get_points(user_id)
+        if current_points is None:
+            return None
+
+        new_points = current_points + points_to_add
+        
+        response = self.client.table("users").update({"points": new_points}).eq("userid", user_id).execute()
+        return response.data[0] if response.data else None

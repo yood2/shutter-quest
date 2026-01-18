@@ -16,6 +16,39 @@ db_helper = DBHelper(
     key=os.getenv('SUPABASE_KEY')
 )
 
+def _check_and_distribute_points(quest_id):
+    quest_data = db_helper.get_quest_details(str(quest_id))
+    
+    if not quest_data or not quest_data.get('participants'):
+        return
+
+    participants = quest_data.get('participants', [])
+    
+    # Check if all participants have a score
+    all_scored = all(p.get('score') is not None for p in participants)
+    
+    if all_scored:
+        winner_id = None
+        best_score = -1
+        best_time = float('inf')
+
+        for p in participants:
+            p_score = p.get('score')
+            p_time = p.get('timetaken')
+            
+            if p_score is not None:
+                if p_score > best_score:
+                    best_score = p_score
+                    best_time = p_time
+                    winner_id = p.get('userid')
+                elif p_score == best_score and p_time < best_time:
+                    best_time = p_time
+                    winner_id = p.get('userid')
+        
+        if winner_id:
+            db_helper.increment_points(winner_id, 1)
+            print(f"Awarded 1 point to winner: {winner_id} for quest: {quest_id}")
+
 @app.route('/api/register', methods=['POST'])
 def register():
     data = request.get_json()
@@ -205,8 +238,11 @@ def complete_quest():
     photo = data.get('photo')
     time = data.get('time')
     
-    quest = get_quest_details(quest_id)
-    score = get_clip_score(photo, quest['prompt']),
+    quest = db_helper.get_quest_details(quest_id)
+    if not quest:
+        return jsonify({'message': 'Quest not found'}), 404
+
+    score = get_clip_score(photo, quest['prompt'])
     update_data = {
         'score': score,
         'timetaken': time,
@@ -214,6 +250,8 @@ def complete_quest():
     }
     
     db_helper.update_participants(quest_id, update_data, user_id)
+    
+    _check_and_distribute_points(quest_id)
     
     return jsonify({
         'message': 'Quest completed successfully',
@@ -280,6 +318,26 @@ def get_quest_details(quest_id):
     }
     
     return jsonify(response_data), 200
+
+@app.route('/api/get-points', methods=['GET'])
+def get_points():
+    user_id = request.args.get('userId')
+
+    if not user_id:
+        return jsonify({
+            'message': 'userId is required'
+        }), 400
+
+    points = db_helper.get_points(user_id)
+    
+    if points is None:
+        return jsonify({
+            'message': 'User not found or has no points'
+        }), 404
+    
+    return jsonify({
+        'points': points
+    }), 200
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
