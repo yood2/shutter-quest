@@ -14,6 +14,16 @@ export default function CreateQuestPage() {
     const [loading, setLoading] = useState(true)
     const [capturedImage, setCapturedImage] = useState<string | null>(null)
     const [invitedUsers, setInvitedUsers] = useState<string[]>([])
+    const [elapsedTime, setElapsedTime] = useState(0)
+
+    // Timer effect - starts when component mounts
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setElapsedTime((prev) => prev + 1)
+        }, 1000)
+
+        return () => clearInterval(timer)
+    }, [])
 
     useEffect(() => {
         // Get invited users from query params
@@ -66,17 +76,28 @@ export default function CreateQuestPage() {
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>Create Quest</CardTitle>
-                        <CardDescription>Take a photo of the prompt</CardDescription>
+                        <CardTitle className="flex justify-between items-center">
+                            <span>Create Quest</span>
+                            <span className="text-sm font-normal">
+                                {Math.floor(elapsedTime / 60)}:{(elapsedTime % 60).toString().padStart(2, '0')}
+                            </span>
+                        </CardTitle>
+                        <CardDescription>
+                            Take a photo of the prompt
+                        </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         {loading ? (
                             <p className="text-center text-muted-foreground">Loading prompt...</p>
                         ) : (
-                            <div className="p-6 bg-muted rounded-lg">
-                                <p className="text-lg font-medium text-center">{prompt}</p>
-                            </div>
+                            <>
+                                <div className="p-6 bg-muted rounded-lg">
+                                    <p className="text-lg font-medium text-center">{prompt}</p>
+                                </div>
+                            </>
                         )}
+
+                        
 
                         {invitedUsers.length > 0 && (
                             <div className="space-y-2">
