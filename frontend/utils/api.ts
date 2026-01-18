@@ -1,4 +1,5 @@
 import { Quest, QuestDetails } from "@/types/types"
+import Image from "next/image"
 
 const url = process.env.NEXT_PUBLIC_URL || "http://127.0.0.1:5000"
 
@@ -87,7 +88,7 @@ export async function completeQuest(questId: string, userId: string, image: stri
             "Content-Type": "application/json",
             "ngrok-skip-browser-warning": "true",
         },
-        body: JSON.stringify({ questId: questId, userId: userId, photo: image, time: time }),
+        body: JSON.stringify({ questId: questId, userId: userId, image: image, time: time }),
     })
     return response.json()
 }
