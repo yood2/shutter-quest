@@ -10,7 +10,7 @@ def get_clip_score(image : str, prompt: str):
     img_bytes = base64.b64decode(image)
     img = Image.open(io.BytesIO(img_bytes))
     
-    results = clip.analyze(img, [prompt, "NOT " + prompt])
+    results = clip.analyze(img, [prompt, "a photo of something else"])
     return round(results[prompt]*100)
     
 def write_image(image: str, quest_id: str, user_id: str):
