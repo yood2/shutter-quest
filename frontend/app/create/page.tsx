@@ -5,14 +5,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { getUser } from "@/utils/api"
 import { useRouter } from "next/navigation"
@@ -42,7 +42,7 @@ export default function CreatePage() {
 
         try {
             const userExists = await getUser(currentUserId)
-            
+
             if (userExists) {
                 setInvitedUsers([...invitedUsers, currentUserId])
                 setCurrentUserId("")
@@ -79,8 +79,8 @@ export default function CreatePage() {
     return (
         <main className="min-h-screen bg-background flex items-center justify-center px-4 py-6">
             <div className="mx-auto max-w-md w-full">
-                <Button 
-                    variant="outline2" 
+                <Button
+                    variant="outline2"
                     className="mb-4"
                     onClick={() => router.push("/")}
                 >
@@ -95,21 +95,22 @@ export default function CreatePage() {
                     <CardContent className="space-y-4">
                         <div className="w-full space-y-3">
                             <Label htmlFor="inviteUsers">Invite Users</Label>
-                            
-                            {/* Invited users list */}
                             {invitedUsers.length > 0 && (
-                                <div className="space-y-2">
+                                <div className="space-y-3">
                                     {invitedUsers.map((userId) => (
-                                        <div 
-                                            key={userId} 
-                                            className="flex items-center justify-between p-2 bg-muted rounded-md"
+                                        <div
+                                            key={userId}
+                                            className="flex items-center justify-between p-3 bg-[#e6ccb2] border-[3px] border-black shadow-[2.5px_2.5px_0px_0px_rgba(0,0,0,0.2)]"
+                                            style={{ fontFamily: "var(--font-body)", imageRendering: "pixelated" }}
                                         >
-                                            <span className="text-sm">{userId}</span>
+                                            <span className="text-2xl pt-1 leading-none text-[#3e2723]">
+                                                {userId}
+                                            </span>
                                             <Button
-                                                variant="ghost"
-                                                size="sm"
+                                                variant="destructive"
+                                                size="icon-xs"
                                                 onClick={() => handleRemoveUser(userId)}
-                                                className="h-6 px-2"
+                                                className="h-8 w-8"
                                             >
                                                 ✕
                                             </Button>
@@ -117,7 +118,6 @@ export default function CreatePage() {
                                     ))}
                                 </div>
                             )}
-
                             {/* Add user input */}
                             <div className="flex gap-2">
                                 <div className="flex-1">
@@ -151,7 +151,7 @@ export default function CreatePage() {
                             </div>
                         </div>
 
-                        <Button 
+                        <Button
                             onClick={handleStartQuestClick}
                             className="w-full"
                         >
