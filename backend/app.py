@@ -196,10 +196,10 @@ def complete_quest():
     photo = data.get('photo')
     time = data.get('time')
     
-    # TODO: Use CLIP to calculate score based on image and prompt
-    
+    quest = get_quest_details(quest_id)
+    score = get_clip_score(photo, quest['prompt']),
     update_data = {
-        'score': None,
+        'score': score,
         'timetaken': time,
         'photo': photo
     }
@@ -208,7 +208,7 @@ def complete_quest():
     
     return jsonify({
         'message': 'Quest completed successfully',
-        'score': None
+        'score': score
     }), 200
 
 @app.route('/api/quest-details/<int:quest_id>', methods=['GET'])
