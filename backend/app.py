@@ -71,6 +71,19 @@ def login():
         'message': 'Login successful'
     }), 200
 
+@app.route('/api/get-user', methods=['GET'])
+def get_user():
+    user_id = request.args.get('userId')
+    user = db_helper.get_user(user_id)
+    if user:
+        return jsonify({
+            'message': 'User exists'
+        }), 200
+    else:
+        return jsonify({
+            'message': 'User does not exist'
+        }), 404
+        
 @app.route('/api/pending-quests', methods=['GET'])
 def get_pending_quests():
     user_id = request.args.get('userId')
