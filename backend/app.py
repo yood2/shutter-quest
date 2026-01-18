@@ -300,7 +300,6 @@ def get_quest_details(quest_id):
             'userId': p.get('userid'),
             'score': p.get('score'),
             'time': p.get('timetaken'), # Mapping timetaken -> time
-            'photo': p.get('photo')
         }
         mapped_participants.append(mapped_p)
 
