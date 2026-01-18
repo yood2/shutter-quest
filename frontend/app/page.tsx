@@ -74,13 +74,13 @@ export default function Page() {
                     className="text-2xl tracking-tighter opacity-80 leading-none mb-1" 
                     style={{ fontFamily: "var(--font-heading)" }}
                 >
-                  Adventurer: {userId}
+                  Welcome, {userId}
                 </p>
                 <p 
                     className="text-4xl text-[#5d4037] leading-none" 
                     style={{ fontFamily: "var(--font-body)" }}
                 >
-                  {points} Gold Points
+                  Revelations: {points}
                 </p>
               </div>
             )}
