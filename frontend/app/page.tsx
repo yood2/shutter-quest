@@ -30,11 +30,11 @@ export default function Page() {
         
         <div className="flex flex-col gap-3">
           <Button 
-            onClick={() => router.push("/start")}
+            onClick={() => router.push("/create")}
             size="lg"
             className="w-full"
           >
-            Start Quest
+            Create Quest
           </Button>
           
           <Button 

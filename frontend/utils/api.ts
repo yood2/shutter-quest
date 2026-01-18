@@ -7,6 +7,7 @@ export async function register(userId: string, password: string) {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
+            "ngrok-skip-browser-warning": "true",
         },
         body: JSON.stringify({ userId: userId, password }),
     })
@@ -18,6 +19,7 @@ export async function login(userId: string, password: string) {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
+            "ngrok-skip-browser-warning": "true",
         },
         body: JSON.stringify({ userId: userId, password }),
     })
@@ -50,30 +52,81 @@ export function getCompletedQuests(userId: string): Quest[] {
     return sample
 }
 
-function createQuest(prompt: string, hostId: string, userIds: string[], image: any, time: number) {
-    return
+export async function createQuest(prompt: string, hostId: string, userIds: string[], image: any, time: number) {
+    const response = await fetch(url + "/api/create-quest", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "ngrok-skip-browser-warning": "true",
+        },
+        body: JSON.stringify({ prompt: prompt, hostId: hostId, userIds: userIds, photo: image, time: time }),
+    })
+    return response.json()
 }
 
-function getPrompt() {
-    return
-}
-
-function completeQuest(questId: string, userId: string, image: any, time: number) {
-    return
-}
-
-function getQuestDetails(questId: string): QuestDetails {
-    const sample: QuestDetails = {
-        questId: 1,
-        prompt: "test prompt",
-        hostId: "testHost",
-        date: Date.now(),
-        winner: "testUser",
-        participants: [
-            { questId: 1, userId: "testUser1", score: 100, time: 30, photo: null },
-            { questId: 1, userId: "testUser2", score: 80, time: 45, photo: null },
-            { questId: 1, userId: "testUser3", score: 60, time: 60, photo: null },
-        ],
+export async function getPrompt() {
+    const response = await fetch(url + "/api/get-prompt", {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "ngrok-skip-browser-warning": "true",
+        },
+    })
+    
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
     }
-    return sample
+    
+    return response.json()
+}
+
+export async function completeQuest(questId: string, userId: string, image: any, time: number) {
+    const response = await fetch(url + "/api/complete-quest", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "ngrok-skip-browser-warning": "true",
+        },
+        body: JSON.stringify({ questId: questId, userId: userId, photo: image, time: time }),
+    })
+    return response.json()
+}
+
+export async function getQuestDetails(questId: string): Promise<QuestDetails> {
+    const response = await fetch(url + `/api/quest-details/${questId}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "ngrok-skip-browser-warning": "true",
+        },
+    })
+    
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    
+    return response.json()
+}
+
+export async function getUser(userId: string): Promise<boolean> {
+    try {
+        const response = await fetch(`${url}/api/get-user?userId=${encodeURIComponent(userId)}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "ngrok-skip-browser-warning": "true",
+            },
+        })
+        
+        if (response.status === 200) {
+            return true
+        } else if (response.status === 404) {
+            return false
+        } else {
+            return false
+        }
+    } catch (error) {
+        console.error("Error checking user:", error)
+        return false
+    }
 }
