@@ -39,6 +39,7 @@ function Button({
   variant = "default",
   size = "default",
   asChild = false,
+  onClick,
   ...props
 }: React.ComponentProps<"button"> &
   VariantProps<typeof buttonVariants> & {
@@ -46,11 +47,23 @@ function Button({
   }) {
   const Comp = asChild ? Slot.Root : "button"
 
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const audio = new Audio('/button.mp3');
+    audio.play().catch(error => {
+      console.log('Audio autoplay prevented:', error);
+    });
+    
+    if (onClick) {
+      onClick(e);
+    }
+  };
+
   return (
     <Comp
       data-slot="button"
       className={cn(buttonVariants({ variant, size, className }))}
       style={{ fontFamily: "var(--font-body)", imageRendering: "pixelated" }}
+      onClick={handleClick}
       {...props}
     />
   )
