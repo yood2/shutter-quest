@@ -154,6 +154,7 @@ export default function CreatePage() {
                         <Button
                             onClick={handleStartQuestClick}
                             className="w-full"
+                            disabled={invitedUsers.length === 0}
                         >
                             Start Quest
                         </Button>
