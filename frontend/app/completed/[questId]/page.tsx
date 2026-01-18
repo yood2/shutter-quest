@@ -98,7 +98,7 @@ export default function QuestDetailsPage({ params }: { params: Promise<{ questId
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>User ID</TableHead>
+                    <TableHead>Adventurer</TableHead>
                     <TableHead>Score</TableHead>
                     <TableHead>Time (s)</TableHead>
                   </TableRow>
